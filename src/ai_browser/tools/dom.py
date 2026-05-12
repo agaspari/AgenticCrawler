@@ -108,8 +108,10 @@ async def extract_elements_by_selector(
     HTML attributes (href, class, data-*, etc.) for each match.
 
     Args:
-        selector: CSS selector to match (e.g., ".job-card", "li.posting",
-                  "tr.job-row").
+        selector: CSS selector to match (e.g., ".job-card", "li.posting").
+                  NOTE: This uses BeautifulSoup, so Playwright-specific
+                  pseudo-classes like ":has-text()" are NOT supported. Use
+                  standard CSS selectors only.
         attributes: Optional list of HTML attributes to extract from each
                     element (e.g., ["href", "class", "data-job-id"]).
                     Text content is always included.
@@ -119,7 +121,10 @@ async def extract_elements_by_selector(
     """
     page = runtime.get_page()
     html = await page.content()
-    elements = _cleaner.extract_elements(html, selector, attributes=attributes)
+    try:
+        elements = _cleaner.extract_elements(html, selector, attributes=attributes)
+    except Exception as e:
+        return f"Error extracting elements: invalid CSS selector '{selector}'. Exception: {e}"
 
     if not elements:
         return f"No elements found matching selector '{selector}'."

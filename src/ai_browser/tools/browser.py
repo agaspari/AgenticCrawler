@@ -97,16 +97,23 @@ async def click_element(selector: str) -> str:
         Confirmation that the element was clicked, with the new page URL.
     """
     page = runtime.get_page()
-    await page.click(selector, timeout=10000)
-    # Wait a moment for any navigation or dynamic content to load
-    await page.wait_for_load_state("domcontentloaded", timeout=10000)
+    try:
+        await page.click(selector, timeout=10000)
+        # Wait a moment for any navigation or dynamic content to load
+        await page.wait_for_load_state("domcontentloaded", timeout=10000)
 
-    title = await page.title()
-    return (
-        f"Clicked element matching '{selector}'\n"
-        f"Current URL: {page.url}\n"
-        f"Page title: {title}"
-    )
+        title = await page.title()
+        return (
+            f"Clicked element matching '{selector}'\n"
+            f"Current URL: {page.url}\n"
+            f"Page title: {title}"
+        )
+    except Exception as e:
+        return (
+            f"Failed to click element '{selector}': {e}\n"
+            f"The element may not exist, may not be visible, or the selector may be wrong.\n"
+            f"Try a different selector or use extract_links to find the correct target."
+        )
 
 
 @tool
