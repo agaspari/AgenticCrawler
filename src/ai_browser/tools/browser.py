@@ -32,16 +32,18 @@ async def navigate_to_url(url: str) -> str:
         A confirmation message with the page title and final URL.
     """
     page = runtime.get_page()
-    response = await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+    try:
+        response = await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+        title = await page.title()
+        status = response.status if response else "unknown"
 
-    title = await page.title()
-    status = response.status if response else "unknown"
-
-    return (
-        f"Navigated to: {page.url}\n"
-        f"Page title: {title}\n"
-        f"HTTP status: {status}"
-    )
+        return (
+            f"Navigated to: {page.url}\n"
+            f"Page title: {title}\n"
+            f"HTTP status: {status}"
+        )
+    except Exception as e:
+        return f"Failed to navigate to {url}: {e}"
 
 
 @tool
