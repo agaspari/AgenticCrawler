@@ -1,0 +1,2 @@
+- does this have a tool for reflection/self think
+- Does this save tool executions to local file system for token offloading?
